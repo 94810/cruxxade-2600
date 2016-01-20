@@ -82,17 +82,19 @@ void FreeBoard(T_board* board){
 }
 
 int InitNewGameboard(int size, T_board* board){	
-	int i=0, j=0, k=0, h=0;
+	int i=0, j=0, k=0;
 	
 	board->size=size;
 	
-	h=AllocBoard(board);	
+	AllocBoard(board);	
 
-	for(i=0;i<board->size;i++)
-		for(j=0;j<board->size;j++)
+	for(i=0;i<board->size;i++){
+		for(j=0;j<board->size;j++){
+			board->grid[i][j].val=EMPTY;
 			for(k=0;k<6;k++)
 				board->grid[i][j].neighbords[k]=NULL;
-				
+		}
+	}	
 	for(j=0;j<board->size-1;j++){
 		for(i=0;i<board->size-1;i++){
 			board->grid[i][j].neighbords[DOWN]=&(board->grid[i+1][j+1]);
