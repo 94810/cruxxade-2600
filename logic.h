@@ -17,12 +17,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define UP 0
+#define DOWN 1
+#define R_UP 2
+#define L_DOWN 3
+#define R_DOWN 4
+#define L_UP 5
 
 //Début Structure de Donnée
-
-typedef enum{
-	UP, DOWN, R_UP, L_DOWN, R_DOWN, L_UP
-} neighbord;
 
 typedef enum{
 	JUMP, DUPLICATE, INVALIDE
@@ -42,11 +44,16 @@ typedef struct hexa{
 	struct hexa* neighbords[6];
 } hexa;
 
+typedef struct {
+	int size;
+	hexa** grid;	
+} T_board;
 //Fin Strucutre de Donnée 
 
 //Début Prototype
-move ValidMove(vect start, vect end, hexa** board, int boardSize);
-int AllocBoard(int boardSize, hexa*** board); //return 0 if sucess ; Neg value otherwise
-void FreeBoard(int boardSize, hexa*** board);
+move ValidMove(vect start, vect end, T_board board);
+int AllocBoard(T_board* board); //return 0 if sucess ; Neg value otherwise
+void FreeBoard(T_board* board);
+int InitNewGameboard(int size, T_board* board);
 //Fin Prototype
 #endif

@@ -13,7 +13,7 @@
 #include "logic.h"
 
 
-move ValidMove(vect start, vect end, hexa** board, int boardSize){
+move ValidMove(vect start, vect end, T_board board){
 	vect dpl;
 	move Res;
 	int normSquare;
@@ -21,7 +21,7 @@ move ValidMove(vect start, vect end, hexa** board, int boardSize){
 	dpl.x=end.x-start.x;
 	dpl.y=end.y-start.y;
 
-	if(end.x>=0 && end.x<boardSize && end.y>=0 && end.y<boardSize && board[end.x][end.y].val==EMPTY){
+	if(end.x>=0 && end.x<board.size && end.y>=0 && end.y<board.size && board.grid[end.x][end.y].val==EMPTY){
 		normSquare=(dpl.x*dpl.x)+(dpl.y*dpl.y);
 
 		if(dpl.x*dpl.y>=0){
@@ -47,20 +47,20 @@ move ValidMove(vect start, vect end, hexa** board, int boardSize){
 }
 
 
-int AllocBoard(int boardSize, hexa*** board){
+int AllocBoard(T_board* board){
 	int i=0;
 	int res=0;	
 	
-	*board = (hexa**) malloc(boardSize*sizeof(hexa*));
+	board->grid = (hexa**) malloc(board->size*sizeof(hexa*));
 	
-	if(*board!=NULL){
+	if(board->grid!=NULL){
 	
-		for(i=0;i<boardSize;i++){
-			(*board)[i]= (hexa*) malloc(boardSize*sizeof(hexa));
-			if((*board)[i]==NULL)
+		for(i=0;i<board->size;i++){
+			board->grid[i]= (hexa*) malloc(board->size*sizeof(hexa));
+			if(board->grid[i]==NULL)
 			{
 				res=-2;
-				i=boardSize;
+				i=board->size;
 			}
 		}
 	}
@@ -70,22 +70,57 @@ int AllocBoard(int boardSize, hexa*** board){
 	return res;						
 }
 
-void FreeBoard(int boardSize, hexa*** board){
+void FreeBoard(T_board* board){
 	int i=0;
 
-	for(i=0;i<boardSize;i++){
-		free((*board)[i]);	
+	for(i=0;i<board->size;i++){
+		free(board->grid[i]);	
 	}
 	
-	free(*board);
-	*board=NULL;
+	free(board->grid);
+	board->grid=NULL;
 }
 
-void main()
-{	
-	hexa** board;
+int InitNewGameboard(int size, T_board* board){	
+	int i=0, j=0, k=0, h=0;
 	
-	AllocBoard(5, &board);
-	FreeBoard(5, &board);
+	board->size=size;
+	
+	h=AllocBoard(board);	
+
+	for(i=0;i<board->size;i++)
+		for(j=0;j<board->size;j++)
+			for(k=0;k<6;k++)
+				board->grid[i][j].neighbords[k]=NULL;
+				
+	for(j=0;j<board->size-1;j++){
+		for(i=0;i<board->size-1;i++){
+			board->grid[i][j].neighbords[DOWN]=&(board->grid[i+1][j+1]);
+			board->grid[i][j].neighbords[L_DOWN]=&(board->grid[i][j+1]);
+			board->grid[i][j].neighbords[R_DOWN]=&(board->grid[i+1][j]);
+		}
+		board->grid[i][j].neighbords[L_DOWN]=&(board->grid[i][j+1]);
+	}
+
+	for(j=board->size-1;j>0;j--){
+		for(i=board->size-1;i>0;i--){
+			board->grid[i][j].neighbords[UP]=&(board->grid[i-1][j-1]);
+			board->grid[i][j].neighbords[L_UP]=&(board->grid[i-1][j]);
+			board->grid[i][j].neighbords[R_UP]=&(board->grid[i][j-1]);
+		}
+		board->grid[i][j].neighbords[R_UP]=&(board->grid[i][j-1]);
+	}
+	
+	return EXIT_SUCCESS;
+}
+
+int main()
+{	
+	T_board board;
+
+	InitNewGameboard(5, &board);
+	FreeBoard(&board);
+
+	return EXIT_SUCCESS;
 }
 
