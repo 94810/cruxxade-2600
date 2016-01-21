@@ -19,32 +19,34 @@
 	
 \section{Algorithmes}
 	\subsection{Gestion de plateau}
-		Chaque case du plateau est représenté par une structure hexa, qui contient une vraiable énumérée (qui correspond au contenu de la case) ainsi qu'un tableau de pointeurs sur des cases, qui correspondent aux cases voisines de celle-ci.\\
-		Le type énuméré prend donc 4 valeurs différentes: \begin{itemize}\item Joueur 1
-								  \item Joueur 2
-								  \item Vide
-								  \item Bloqué\end{itemize}
-		
-		Cette structure permet donc de gérer le bloquage de certaines cases, ainsi qu'un calcul facile des cases ou le joeur peut jouer, ou non. 
-	\subsection{Déplacement et coups}
-	Pour determiner ou le joueur peut se copier/sauter, on utilise un algoritmhe qui nous renvoie, suivnat la case de départ et celle d'arrivée, le coup joué.\\
+		Le plateau est stocké sous forme d'un tableau.
+		Chaque case du plateau est représenté par une structure hexa, qui contient une variable énumérée (qui correspond au contenu de la case) ainsi qu'un tableau de pointeurs sur des cases, qui correspondent aux cases voisines directes de celle-ci.\\
+		Le type énuméré prend donc 4 valeurs différentes: 	\begin{itemize}
+									\item Joueur 1
+								  	\item Joueur 2
+								  	\item Vide
+								  	\item Bloqué
+								  	\end{itemize}
 	
-	Pour cela, l'algorithme va calculer un vecteur de déplacement.  Ce vecteur rassemble la distance entre les deux cases, ainsi que comment elles sont orientées l'une par rapport a l'autre.\\
+		Cette structure permet donc de gérer le bloquage de certaines cases, ainsi qu'un calcule facile des cases ou le joeur peut jouer, ou non. 
+	\subsection{Déplacement et coups}
+	Pour determiner ou le joueur peut se copier/sauter, on utilise un algoritmhe qui nous renvoie, suivant la case de départ et celle d'arrivée, le coup joué.\\
+	
+	Pour cela, l'algorithme va calculer un vecteur de déplacement. Ce vecteur rassemble la distance entre les deux cases, ainsi que comment elles sont orientées l'une par rapport a l'autre.\\
 	
 	Au vu de vecteur il sera donc simple de déterminer si la case est joauble, et , ci c'est le cas, le type de coup jouée dans cette case.\\
-	Si c'est une copie, il suffit de changer la valeur de la case, sinon,  il suffit de regarder les voisins de la case d'arrivée, et de modifier leur valeurs.
+	Si c'est une copie, il suffit de changer la valeur de la case puis ,si besoin, celle des ces voisines directes, sinon, il suffit de regarder les voisins de la case d'arrivée, et de modifier leur valeurs si besoin.
 
 \section{Graphiques}
 	\subsection{Méthode choisie}
 	
-		Nous avons choisi de modéliser tout le jeu en utilisant la bibliothèque graphique SDL 1.2, qui nous permet de gérer le son, ainsi que les graphimses, et la souris. Nous importerons des bmp pour afficher le plateau et les pions.\\
+		Nous avons choisi de modéliser tout le jeu en utilisant la bibliothèque graphique SDL 1.2, qui nous permet de gérer le son, ainsi que les graphismes, et la souris. Nous importerons des images bitmap pour afficher le plateau et les pions.\\
 		
-		La SDl nous permettra également dee gérer la selection des cases en utilisant des Collide Box. 
-	
+		La SDL nous permettra également dee gérer la selection des cases, ainsi que des boutons des menus, en utilisant un système de Collide Box.
 	
 	\subsection{Style graphique}
 	
-		Nous avons choisi de faire notre hexagon dans le style synthwave (Tron leagacy, Kung Fury, Far Cry : Blood Dragon): Couleurs néon sur du noir, et personnages cyberpubnk, yolo yaura du banga et des licornes
+		Nous avons choisi de faire notre hexagon dans le style synthwave (Tron Leagacy, Kung Fury, Far Cry : Blood Dragon): Couleurs néon sur du noir, et personnages cyberpunk.
 
 \end{document}
 
