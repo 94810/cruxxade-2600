@@ -116,13 +116,3 @@ int InitNewGameboard(int size, T_board* board){
 	return EXIT_SUCCESS;
 }
 
-int main()
-{	
-	T_board board;
-
-	InitNewGameboard(5, &board);
-	FreeBoard(&board);
-
-	return EXIT_SUCCESS;
-}
-
