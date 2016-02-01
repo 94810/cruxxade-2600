@@ -8,4 +8,5 @@
 #include "logic.h"
 
 
+void BlitGameboard(T_board board, SDL_Surface* screen, SDL_Surface* sprite);
 #endif
