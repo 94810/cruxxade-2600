@@ -15,12 +15,12 @@
 #include "graphics.h"
 
 //Even more Vicious Evil Globals Section
-extern SDL_Rect cursor[2]; // 0 -> p1 | 1 -> p2
 extern SDL_Rect hexaBlue;
 extern SDL_Rect hexaGreen;
 extern SDL_Rect hexaRed;
 extern SDL_Rect p1Token;
 extern SDL_Rect p2Token;
+
 
 void BlitGameboard(T_board board, SDL_Surface* screen, SDL_Surface* sprite){
 	SDL_Rect initPos={0,0,0,0}, Pos;
