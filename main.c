@@ -15,6 +15,9 @@ int main(){
 
 	SDL_Surface *screen = NULL, *sprite=NULL, *background=NULL;
 	SDL_Event event;
+	SDL_Rect pos={0,0,0,0};
+
+	vect tmp;
 
 	T_board board;
 
@@ -24,7 +27,9 @@ int main(){
 
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO); 
 	
-	screen = SDL_SetVideoMode(800, 600, 32, SDL_HWSURFACE); 
+	screen = SDL_SetVideoMode(800, 600, 32, SDL_HWSURFACE);
+
+	//SDL_ShowCursor(SDL_DISABLE);
 
 	SDL_WM_SetCaption("<===| Cruxxade - 2600 |====>",NULL);
 	
@@ -45,11 +50,24 @@ int main(){
 			case SDL_QUIT :
 				exit=0;
 			break;
+			
+			case SDL_MOUSEMOTION:
+				tmp.x = event.motion.x;
+				tmp.y = event.motion.y;
+				
+				tmp = GetHexaCoor(board, tmp);
+			break;
 		}
 		
 				
 		//SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
 		BlitGameboard(board, screen, sprite);
+		if(tmp.x>=0 && tmp.x<board.size && tmp.y>=0 && tmp.y<board.size){
+			pos.x = (4.0/6.0)*hexaBlue.w*(tmp.x-tmp.y) + GetOrigineHex(board).x;
+			pos.y = 0.5*hexaBlue.h*(tmp.x+tmp.y) + GetOrigineHex(board).y;
+			
+			SDL_BlitSurface(sprite, &hexaRed, screen, &pos);
+		}
 		SDL_Flip(screen);
 	}
 		

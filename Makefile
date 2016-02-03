@@ -1,6 +1,6 @@
 CC=gcc
 CFLAGS=$(shell sdl-config --cflags) -Wall -g
-LIBS=$(shell sdl-config --libs) -lSDL_image
+LIBS=$(shell sdl-config --libs) -lSDL_image -lm
 
 logic.o : logic.c logic.h
 	$(CC) $(CFLAGS) -c -o $@ $<
