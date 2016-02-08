@@ -23,7 +23,8 @@
 #define L_DOWN 3
 #define R_DOWN 4
 #define L_UP 5
-
+#define TRUE 1
+#define FALSE 0
 //Début Structure de Donnée
 
 typedef enum{
@@ -31,7 +32,7 @@ typedef enum{
 } move;
 
 typedef enum{
-	EMPTY, PLAYER_1, PLAYER_2, CLOSED
+	EMPTY, PLAYER_1=0, PLAYER_2=1, CLOSED
 } case_value;
 
 typedef struct{
@@ -55,5 +56,6 @@ move ValidMove(vect start, vect end, T_board board);
 int AllocBoard(T_board* board); //return 0 if sucess ; Neg value otherwise
 void FreeBoard(T_board* board);
 int InitNewGameboard(int size, T_board* board);
+int IsAlive(vect pos, T_board board);
 //Fin Prototype
 #endif

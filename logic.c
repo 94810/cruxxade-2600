@@ -116,3 +116,43 @@ int InitNewGameboard(int size, T_board* board){
 	return EXIT_SUCCESS;
 }
 
+int IsAlive(vect pos, T_board board){
+	int res = FALSE, i=0, j=0;
+
+	for(i=pos.x-2 ; i<=pos.x ; i++){
+		for(j=pos.y-2 ; j<pos.y ; j++){
+			if(j>=0 && i>=0 && j<board.size && i<board.size){
+				if(board.grid[i][j].val==EMPTY){
+					res = TRUE;
+				}
+			}
+		}
+	}
+
+	for(i=pos.x ; i<=pos.x+2 ; i++){
+		for(j=pos.y ; j<pos.y+2 ; j++){
+			if(j>=0 && i>=0 && j<board.size && i<board.size){
+				if(board.grid[i][j].val==EMPTY){
+					res = TRUE;
+				}
+			}
+		}
+	}
+
+	i=pos.x+1;
+	j=pos.y-1;
+	if(j>=0 && i>=0 && j<board.size && i<board.size){
+		if(board.grid[i][j].val==EMPTY){
+				res = TRUE;
+		}
+	}	
+
+	i=pos.x-1;
+	j=pos.y+1;
+	if(j>=0 && i>=0 && j<board.size && i<board.size){
+		if(board.grid[i][j].val==EMPTY){
+				res = TRUE;
+		}
+	}	
+	return res;
+}

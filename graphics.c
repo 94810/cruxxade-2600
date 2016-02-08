@@ -51,60 +51,60 @@ void BlitGameboard(T_board board, SDL_Surface* screen, SDL_Surface* sprite){
 vect GetHexaCoor(T_board board, vect cursor){
 	vect initPos = GetOrigineHex(board), res;	
 	
-	double x, y, xr, yr, m, p;
+	double posX, posY, posReCentX, posReCentY, coefCurv, p;
 	
 	int k=0;
 
 	initPos.x=initPos.x+(hexaBlue.w/2);
 	initPos.y=initPos.y;
 	
-	x = (cursor.x-initPos.x) / ((4.0/6.0)*hexaBlue.w);
-	y = (cursor.y-initPos.y) / (0.5*hexaBlue.h);
+	posX = (cursor.x-initPos.x) / ((4.0/6.0)*hexaBlue.w);
+	posY = (cursor.y-initPos.y) / (0.5*hexaBlue.h);
 	
 
-	k= (int)floor(x)%2 + (int)floor(y)%2;
-	m = 4.0/2.0;
+	k= (int)posX%2 + (int)posY%2;
+	coefCurv = 4.0/2.0;
 	p = 2.0/3.0;
 
-	xr = x - floor(x);
-	yr = y - floor(y);
+	posReCentX = posX - (int)posX;
+	posReCentY = posY - (int)posY;
 
 	
 		
-	if(x>0){
+	if(posX>0){
 		
 		switch(k){
 			case 1:		
-				if(yr < ((-m)*xr+p))
-					x=floor(x)+1;
+				if(posReCentY < ((-coefCurv)*posReCentX+p))
+					posX=(int)posX+1;
 			break;
 
 			case 0:
 			case 2:
-				if(yr < ((m*xr)-p))
-					x=floor(x)+1;
+				if(posReCentY < ((coefCurv*posReCentX)-p))
+					posX=(int)posX+1;
 			break;
 		}
 	}
 
-	else if(x<0){
+	else if(posX<0){
 		switch(k){
 			case 1:
-				if(yr > (m*xr+p))
-					x=(int)x-1;
+				if(posReCentY > (coefCurv*posReCentX+p))
+					posX=(int)posX-1;
 			break;
 
 			case 0:
 			case 2:
-				if(yr < ((-m)*xr-p))
-					x=(int)x-1;
+				if(posReCentY < ((-coefCurv)*posReCentX-p))
+					posX=(int)posX-1;
 			break;	
 		}
 	}
 
-	res.x = (int) (0.5*x + 0.5*y);
-	res.y = (int) (-0.5*x + 0.5*y); 
-	
+	res.x = (int) (0.5*posX + 0.5*posY);
+	res.y = (int) (-0.5*posX + 0.5*posY); 
+
 	return res;
 }
 

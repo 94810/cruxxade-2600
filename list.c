@@ -31,7 +31,7 @@ void AppendList(Hexa_list** init, vect val){
 }
 
 void SupprEltList(Hexa_list** init, unsigned int indice){
-	Hexa_list *list=(*init), pre=(*init);
+	Hexa_list *list=(*init), *pre=(*init);
 
 	if(list!=NULL){
 		if(indice>0){
