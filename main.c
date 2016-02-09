@@ -94,7 +94,8 @@ void NewGame(SDL_Surface *screen, SDL_Surface *sprite, int board_size){
 				if(board.grid[runList->pos.x][runList->pos.y].val==player){
 					if(IsAlive(runList->pos, board)==FALSE){
 						runList = runList->next;
-						SupprEltList(Alive+player, i);
+						SupprEltList(&(Alive[player]), i);	
+						i--;
 					}
 				
 					else
@@ -102,7 +103,8 @@ void NewGame(SDL_Surface *screen, SDL_Surface *sprite, int board_size){
 				}
 				else{
 					runList = runList->next;	
-					SupprEltList(Alive+player, i);
+					SupprEltList(&(Alive[player]), i);
+					i--;
 				}
 	
 				i++;

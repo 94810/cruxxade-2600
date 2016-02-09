@@ -49,7 +49,8 @@ void SupprEltList(Hexa_list** init, unsigned int indice){
 		}
 		
 		else{
-			list=list->next;	
+			*init=list->next;
+			free(list);
 		}
 	}
 
@@ -76,7 +77,7 @@ move ValidMove(vect start, vect end, T_board board){
 		}
 
 		else{
-			if(normSquare==4)
+			if(normSquare==2)
 				Res=JUMP;
 			else
 				Res=INVALIDE;
