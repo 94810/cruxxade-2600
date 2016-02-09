@@ -3,32 +3,34 @@
 */
 #include "logic.h"
 #include "graphics.h"
-#include "list.h"
 
 //Vicious Evil of The Demonic Demon of Doom Globals Section
-const SDL_Rect hexaBlue={0,0,54,54};
-const SDL_Rect hexaGreen={56,0,54,54};
-const SDL_Rect hexaRed={112,0,54,54};
-const SDL_Rect Token[2]={{0,56,24,34},{0,92,31,39}};
+SDL_Rect hexaBlue={0,0,54,54};
+SDL_Rect hexaGreen={56,0,54,54};
+SDL_Rect hexaRed={112,0,54,54};
+SDL_Rect Token[2]={{0,56,24,34},{0,92,31,39}};
 
 void NewGame(SDL_Surface *screen, SDL_Surface *sprite, int board_size){
-	int exit=1;
+	int exit=1, goodClick=0, player=0, i=0;
 	SDL_Event event;
 	SDL_Rect pos={0,0,0,0};
 
-	Hexa_list* Alive[2]={NULL,NULL}; 
+	move actMv;
+
+	Hexa_list* Alive[2]={NULL,NULL}, *runList;	 
 	
-	vect tmp;
+	vect tmp, firstClick, secondClick;
 
 	T_board board;
 
-	InitNewGameboard(11, &board);
+	InitNewGameboard(board_size, &board);
 	
 	board.grid[0][0].val=PLAYER_1;
         AppendList(Alive,(vect){0,0}); // C99 Compound Literals here
 
+
 	board.grid[board_size-1][board_size-1].val=PLAYER_2;
-	AppendList(Alive,(vect){board_size-1, board_size-1}); // Again
+	AppendList(Alive+1,(vect){board_size-1, board_size-1}); // Again
 
 
 	while(exit)
@@ -46,17 +48,77 @@ void NewGame(SDL_Surface *screen, SDL_Surface *sprite, int board_size){
 				
 				tmp = GetHexaCoor(board, tmp);
 			break;
-		}
+	
+			case SDL_MOUSEBUTTONDOWN:
+				if(event.button.button==SDL_BUTTON_LEFT){
+					if(goodClick==0){
+						tmp = (vect) {event.button.x, event.button.y};
+						tmp = GetHexaCoor(board, tmp);
+						if(tmp.x>=0 && tmp.x<board.size && tmp.y>=0 && tmp.y<board.size){
+							if(player==board.grid[tmp.x][tmp.y].val){
+								firstClick = tmp;
+								goodClick++;
+							}
+						}
+					}
+					
+					else if(goodClick==1){
+						secondClick = (vect) {event.button.x, event.button.y};
+						secondClick = GetHexaCoor(board, secondClick);
+
+						actMv = ValidMove(firstClick, secondClick, board);
 		
+						if(actMv!=INVALIDE){
+							goodClick++;
+						}	
+						
+					}
+				}
 				
-		//SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
+				else if(event.button.button==SDL_BUTTON_RIGHT){
+					goodClick = 0;
+				}		
+			break;
+				
+		}
+
+		if(goodClick==2){
+			goodClick=0; //Reset click count
+			playMove(&board, actMv,&(Alive[player]) ,firstClick, secondClick, player); // Play the move
+			player=(player+1)%2; // Change player
+
+			//Update alive list
+			runList = Alive[player];
+			i=0;
+			while(runList!=NULL){
+				if(board.grid[runList->pos.x][runList->pos.y].val==player){
+					if(IsAlive(runList->pos, board)==FALSE){
+						runList = runList->next;
+						SupprEltList(Alive+player, i);
+					}
+				
+					else
+						runList = runList->next;
+				}
+				else{
+					runList = runList->next;	
+					SupprEltList(Alive+player, i);
+				}
+	
+				i++;
+			}
+			
+		}
+				
 		BlitGameboard(board, screen, sprite);
+		
 		if(tmp.x>=0 && tmp.x<board.size && tmp.y>=0 && tmp.y<board.size){
 			pos.x = (4.0/6.0)*hexaBlue.w*(tmp.x-tmp.y) + GetOrigineHex(board).x;
 			pos.y = 0.5*hexaBlue.h*(tmp.x+tmp.y) + GetOrigineHex(board).y;
 			
-			SDL_BlitSurface(sprite, &hexaGreen, screen, &pos);
+			SDL_BlitSurface(sprite, &hexaRed, screen, &pos);
 		}
+
 		SDL_Flip(screen);
 	}
 
@@ -85,7 +147,7 @@ int main(){
 	SDL_FreeSurface(temp);
 	SDL_BlitSurface(background, NULL, screen, NULL);
 	
-	NewGame(screen, sprite, 11); //start New Game on new board
+	NewGame(screen, sprite, 5); //start New Game on new board
 			
 	SDL_Quit();
 

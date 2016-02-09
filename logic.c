@@ -12,6 +12,48 @@
 */
 #include "logic.h"
 
+void AppendList(Hexa_list** init, vect val){
+	Hexa_list *list=(*init);
+
+	if(*init==NULL){	
+		*init = malloc(sizeof(Hexa_list));
+		(*init)->next=NULL;
+		(*init)->pos=val;			
+	}
+	
+	else{
+		while(list->next!=NULL)
+			list = list->next;
+
+		list->next = malloc(sizeof(Hexa_list));
+		list->next->next=NULL;
+		list->next->pos=val;	
+	}
+}
+
+void SupprEltList(Hexa_list** init, unsigned int indice){
+	Hexa_list *list=(*init), *pre=(*init);
+
+	if(list!=NULL){
+		if(indice>0){
+			while(list->next!=NULL && indice>0){
+				pre=list;
+				list=list->next;
+				indice --;
+			}
+			if(pre==list)
+				list=NULL;
+
+			pre->next=list->next;
+			free(list);
+		}
+		
+		else{
+			list=list->next;	
+		}
+	}
+
+}
 
 move ValidMove(vect start, vect end, T_board board){
 	vect dpl;
@@ -25,7 +67,7 @@ move ValidMove(vect start, vect end, T_board board){
 		normSquare=(dpl.x*dpl.x)+(dpl.y*dpl.y);
 
 		if(dpl.x*dpl.y>=0){
-			if(normSquare>=4 && normSquare<8)
+			if(normSquare>=4 && normSquare<=8)
 				Res=JUMP;
 			else if(normSquare<=2)
 				Res=DUPLICATE;
@@ -46,6 +88,54 @@ move ValidMove(vect start, vect end, T_board board){
 	return Res;
 }
 
+void playMove(T_board* board, move mvt, Hexa_list **alivePlAct, vect start, vect end, int player){
+	int i=0;
+
+	if(mvt==DUPLICATE){
+		board->grid[end.x][end.y].val = player;
+		AppendList(alivePlAct, end);
+	}
+
+	else if(mvt==JUMP){
+		board->grid[end.x][end.y].val = player;	
+		board->grid[start.x][start.y].val = EMPTY;
+		AppendList(alivePlAct, end);
+		
+	}
+
+	if(mvt==JUMP || mvt==DUPLICATE){
+		for(i=0; i<6 ; i++){
+			if(board->grid[end.x][end.y].neighbords[i]!=NULL){
+				if(board->grid[end.x][end.y].neighbords[i]->val!=player && (board->grid[end.x][end.y].neighbords[i]->val==PLAYER_2 || board->grid[end.x][end.y].neighbords[i]->val==PLAYER_1) ){
+					board->grid[end.x][end.y].neighbords[i]->val=player;
+				        switch(i){
+						case UP:
+							AppendList(alivePlAct, (vect){end.x-1, end.y-1});
+						break;
+						case DOWN:	
+							AppendList(alivePlAct, (vect){end.x+1, end.y+1});
+						break;
+						case R_DOWN:	
+							AppendList(alivePlAct, (vect){end.x+1, end.y});
+						break;
+						case L_DOWN:	
+							AppendList(alivePlAct, (vect){end.x, end.y+1});
+						break;
+						case L_UP:	
+							AppendList(alivePlAct, (vect){end.x-1, end.y});
+						break;
+						case R_UP:	
+							AppendList(alivePlAct, (vect){end.x, end.y-1});
+						break;
+					}	
+				}
+			
+			}
+		}
+	
+
+	}
+} 
 
 int AllocBoard(T_board* board){
 	int i=0;

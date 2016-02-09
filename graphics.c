@@ -18,8 +18,7 @@
 extern SDL_Rect hexaBlue;
 extern SDL_Rect hexaGreen;
 extern SDL_Rect hexaRed;
-extern SDL_Rect p1Token;
-extern SDL_Rect p2Token;
+extern SDL_Rect Token[2];
 
 vect GetOrigineHex(T_board board){
 	vect pos;
@@ -31,7 +30,7 @@ vect GetOrigineHex(T_board board){
 }
 
 void BlitGameboard(T_board board, SDL_Surface* screen, SDL_Surface* sprite){
-	SDL_Rect Pos;
+	SDL_Rect Pos, tokenPos;
 	vect initPos = GetOrigineHex(board);
 	
 	int i, j;
@@ -44,6 +43,19 @@ void BlitGameboard(T_board board, SDL_Surface* screen, SDL_Surface* sprite){
 			Pos.x = (4.0/6.0)*hexaBlue.w*(i-j) + initPos.x;
 			Pos.y = 0.5*hexaBlue.h*(i+j) + initPos.y;
 			SDL_BlitSurface(sprite, &hexaBlue, screen, &Pos);
+			switch(board.grid[i][j].val){
+				case PLAYER_1:
+					tokenPos = (SDL_Rect){Pos.x+16,Pos.y+10,0,0};
+					SDL_BlitSurface(sprite, Token, screen, &tokenPos);
+				break;
+				
+				case PLAYER_2:
+					tokenPos = (SDL_Rect){Pos.x+13,Pos.y+7,0,0};
+					SDL_BlitSurface(sprite, Token+1, screen, &tokenPos);
+				break;
+				default :
+				break;
+			}
 		}
 	}
 }
