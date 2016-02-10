@@ -1,18 +1,27 @@
 /*
-	Here comme the main program
+	Here comme the main programi
+	Use SDL 1.2 and SDL_Image
+	A Migration to SDL 2.0 would be great.
 */
 #include "logic.h"
 #include "graphics.h"
 
 //Vicious Evil of The Demonic Demon of Doom Globals Section
+
 SDL_Rect hexaBlue={0,0,54,54};
 SDL_Rect hexaGreen={56,0,54,54};
 SDL_Rect hexaRed={112,0,54,54};
 SDL_Rect hexaBlack={168,0,54,54};
 SDL_Rect Token[2]={{0,56,24,34},{0,92,31,39}};
 SDL_Rect winText[3]={{46,112,364,66},{46,56,367,54},{46,180,165,50}};
+ 
+typedef struct {
+	int boardSize;
+	char name[2][15];
+	int gameMode;
+}Param;
 
-void NewGame(SDL_Surface *screen, SDL_Surface *sprite, int board_size){
+void NewGame(SDL_Surface *screen, SDL_Surface *sprite, Param param){
 	int exit=1, goodClick=0, player=0, i=0, j=0;
 	SDL_Event event;
 	SDL_Rect pos={0,0,0,0};
@@ -27,14 +36,14 @@ void NewGame(SDL_Surface *screen, SDL_Surface *sprite, int board_size){
 
 	T_board board;
 
-	InitNewGameboard(board_size, &board);
+	InitNewGameboard(param.boardSize, &board);
 	
 	board.grid[0][0].val=PLAYER_1;
         AppendList(Alive,(vect){0,0}); // C99 Compound Literals here
 
 
-	board.grid[board_size-1][board_size-1].val=PLAYER_2;
-	AppendList(Alive+1,(vect){board_size-1, board_size-1}); // Again
+	board.grid[board.size-1][board.size-1].val=PLAYER_2;
+	AppendList(Alive+1,(vect){board.size-1, board.size-1}); // Again
 
 
 	while(exit)
@@ -104,7 +113,7 @@ void NewGame(SDL_Surface *screen, SDL_Surface *sprite, int board_size){
 		SDL_Flip(screen);
 		
 		if(Alive[player]==NULL){
-			player=player+1%2; //On calcul le score final de joueur non bloqué
+			player=player+1%2; //Compute final score
 			for(i=0;i<board.size;i++){
 				for(j=0;j<board.size;j++){
 					if(board.grid[i][j].val==EMPTY)
@@ -132,13 +141,16 @@ void NewGame(SDL_Surface *screen, SDL_Surface *sprite, int board_size){
 
 int main(){
 
+	Param param={11, {"Granolax","Orangilux"}, 0};
+		
 	SDL_Surface *screen = NULL, *sprite=NULL, *background=NULL;
 
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO); 
 	
 	screen = SDL_SetVideoMode(800, 600, 32, SDL_HWSURFACE);
 
-	//SDL_ShowCursor(SDL_DISABLE);
+	if(screen==NULL)
+		abort();
 
 	SDL_WM_SetCaption("<===| Cruxxade - 2600 |====>",NULL);
 	
@@ -150,12 +162,34 @@ int main(){
 	background = SDL_DisplayFormatAlpha(temp); //Convert surface to a faster blitting format
 	SDL_FreeSurface(temp);
 	SDL_BlitSurface(background, NULL, screen, NULL);
+
+	//THUG ZONE 
+
+	SDL_Event event;
+	int i=1;
+	char carac;
 	
-	NewGame(screen, sprite, 11); //start New Game on new board
+	while(i){
+		SDL_WaitEvent(&event);
+		
+		switch(event.type){
+			case SDL_QUIT:
+				i=0;			
+			break;
+			case SDL_KEYDOWN:
+				printf("%s\n", SDL_GetKeyName(event.key.keysym.sym));
+			break;
+		}
+
+	}
+	
+
+	//THUG ZONE
+	
+	NewGame(screen, sprite, param); //start New Game on new board
 
 	EraseBoard(11, screen, sprite);
 	
-
 	SDL_Flip(screen);
 			
 	SDL_Delay(2000);
