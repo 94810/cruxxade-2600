@@ -12,6 +12,34 @@
 */
 #include "logic.h"
 
+void UpdateAlive(T_board board, int player, Hexa_list **Alive)
+{
+	int i=0;
+	Hexa_list *runList=NULL;
+
+	runList = Alive[player];
+	i=0;
+	while(runList!=NULL){
+		if(board.grid[runList->pos.x][runList->pos.y].val==player){
+			if(IsAlive(runList->pos, board)==FALSE){
+				runList = runList->next;
+				SupprEltList(&(Alive[player]), i);	
+				i--;
+			}
+			
+			else
+				runList = runList->next;
+		}
+		else{
+			runList = runList->next;	
+			SupprEltList(&(Alive[player]), i);
+			i--;
+		}
+	
+		i++;
+	}
+}
+
 void AppendList(Hexa_list** init, vect val){
 	Hexa_list *list=(*init);
 
@@ -89,12 +117,13 @@ move ValidMove(vect start, vect end, T_board board){
 	return Res;
 }
 
-void playMove(T_board* board, move mvt, Hexa_list **alivePlAct, vect start, vect end, int player){
+void playMove(T_board* board, move mvt, Hexa_list **alivePlAct, vect start, vect end, int player, int *score){
 	int i=0;
 
 	if(mvt==DUPLICATE){
 		board->grid[end.x][end.y].val = player;
 		AppendList(alivePlAct, end);
+		score[player]+=1;
 	}
 
 	else if(mvt==JUMP){
@@ -114,7 +143,7 @@ void playMove(T_board* board, move mvt, Hexa_list **alivePlAct, vect start, vect
 							AppendList(alivePlAct, (vect){end.x-1, end.y-1});
 						break;
 						case DOWN:	
-							AppendList(alivePlAct, (vect){end.x+1, end.y+1});
+							AppendList(alivePlAct, (vect){end.x+1, end.y+1});	
 						break;
 						case R_DOWN:	
 							AppendList(alivePlAct, (vect){end.x+1, end.y});
@@ -129,6 +158,9 @@ void playMove(T_board* board, move mvt, Hexa_list **alivePlAct, vect start, vect
 							AppendList(alivePlAct, (vect){end.x, end.y-1});
 						break;
 					}	
+					
+					score[player]+=1;
+					score[(player+1)%2]-=1;
 				}
 			
 			}

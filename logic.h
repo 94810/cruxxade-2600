@@ -64,8 +64,9 @@ int AllocBoard(T_board* board); //return 0 if sucess ; Neg value otherwise
 void FreeBoard(T_board* board);
 int InitNewGameboard(int size, T_board* board);
 int IsAlive(vect pos, T_board board);
-void playMove(T_board* board, move mvt, Hexa_list **alivePlAct, vect start, vect end, int player);
+void playMove(T_board* board, move mvt, Hexa_list **alivePlAct, vect start, vect end, int player, int *score);
 void AppendList(Hexa_list** init, vect val);
 void SupprEltList(Hexa_list** init, unsigned int indice);
+void UpdateAlive(T_board board, int player, Hexa_list **Alive);
 //Fin Prototype
 #endif

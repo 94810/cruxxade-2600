@@ -8,16 +8,20 @@
 SDL_Rect hexaBlue={0,0,54,54};
 SDL_Rect hexaGreen={56,0,54,54};
 SDL_Rect hexaRed={112,0,54,54};
+SDL_Rect hexaBlack={168,0,54,54};
 SDL_Rect Token[2]={{0,56,24,34},{0,92,31,39}};
+SDL_Rect winText[3]={{46,112,364,66},{46,56,367,54},{46,180,165,50}};
 
 void NewGame(SDL_Surface *screen, SDL_Surface *sprite, int board_size){
-	int exit=1, goodClick=0, player=0, i=0;
+	int exit=1, goodClick=0, player=0, i=0, j=0;
 	SDL_Event event;
 	SDL_Rect pos={0,0,0,0};
 
 	move actMv;
 
-	Hexa_list* Alive[2]={NULL,NULL}, *runList;	 
+	int score[2]={0};
+
+	Hexa_list* Alive[2]={NULL,NULL};	 
 	
 	vect tmp, firstClick, secondClick;
 
@@ -79,49 +83,47 @@ void NewGame(SDL_Surface *screen, SDL_Surface *sprite, int board_size){
 					goodClick = 0;
 				}		
 			break;
-				
 		}
 
 		if(goodClick==2){
 			goodClick=0; //Reset click count
-			playMove(&board, actMv,&(Alive[player]) ,firstClick, secondClick, player); // Play the move
+			playMove(&board, actMv,&(Alive[player]) ,firstClick, secondClick, player, score); // Play the move
 			player=(player+1)%2; // Change player
-
-			//Update alive list
-			runList = Alive[player];
-			i=0;
-			while(runList!=NULL){
-				if(board.grid[runList->pos.x][runList->pos.y].val==player){
-					if(IsAlive(runList->pos, board)==FALSE){
-						runList = runList->next;
-						SupprEltList(&(Alive[player]), i);	
-						i--;
-					}
-				
-					else
-						runList = runList->next;
-				}
-				else{
-					runList = runList->next;	
-					SupprEltList(&(Alive[player]), i);
-					i--;
-				}
-	
-				i++;
-			}
-			
+			UpdateAlive(board, player, Alive); //Update Alive Pawn		
 		}
 				
 		BlitGameboard(board, screen, sprite);
 		
 		if(tmp.x>=0 && tmp.x<board.size && tmp.y>=0 && tmp.y<board.size){
-			pos.x = (4.0/6.0)*hexaBlue.w*(tmp.x-tmp.y) + GetOrigineHex(board).x;
-			pos.y = 0.5*hexaBlue.h*(tmp.x+tmp.y) + GetOrigineHex(board).y;
+			pos.x = (4.0/6.0)*hexaBlue.w*(tmp.x-tmp.y) + GetOrigineHex(board.size).x;
+			pos.y = 0.5*hexaBlue.h*(tmp.x+tmp.y) + GetOrigineHex(board.size).y;
 			
 			SDL_BlitSurface(sprite, &hexaRed, screen, &pos);
 		}
 
 		SDL_Flip(screen);
+		
+		if(Alive[player]==NULL){
+			player=player+1%2; //On calcul le score final de joueur non bloqué
+			for(i=0;i<board.size;i++){
+				for(j=0;j<board.size;j++){
+					if(board.grid[i][j].val==EMPTY)
+						score[player]+=1;
+				}		
+			}
+			
+			BlitWinner(sprite, screen, score);
+					
+			SDL_Flip(screen);
+			
+			SDL_Delay(50); //Prevent closing too soon
+			
+			while(exit){
+				SDL_WaitEvent(&event);
+				if(event.type==SDL_MOUSEBUTTONDOWN || event.type==SDL_QUIT)
+					exit=0;
+			}
+		}
 	}
 
 	FreeBoard(&board);
@@ -149,8 +151,14 @@ int main(){
 	SDL_FreeSurface(temp);
 	SDL_BlitSurface(background, NULL, screen, NULL);
 	
-	NewGame(screen, sprite, 5); //start New Game on new board
+	NewGame(screen, sprite, 11); //start New Game on new board
+
+	EraseBoard(11, screen, sprite);
+	
+
+	SDL_Flip(screen);
 			
+	SDL_Delay(2000);
 	SDL_Quit();
 
 	return 0;
