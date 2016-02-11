@@ -12,6 +12,44 @@
 */
 #include "logic.h"
 
+void PlaceToken(Param param, T_board *board, Hexa_list **Alive){
+	
+	int placed=0, i=0, j=0;
+	
+	board->grid[0][0].val=PLAYER_1;
+	board->grid[board->size-1][board->size-1].val=PLAYER_1;
+	AppendList(&(Alive[0]), (vect) {0,0});
+	AppendList(&(Alive[0]), (vect) {board->size-1, board->size-1});
+	
+	board->grid[0][board->size-1].val=PLAYER_2;
+	board->grid[board->size-1][0].val=PLAYER_2;
+
+	AppendList(&(Alive[1]), (vect) {0, board->size-1});
+	AppendList(&(Alive[1]), (vect) {board->size-1, 0});
+	
+	while(placed<param.closedHex){
+		i=rand()%board->size;
+		j=rand()%board->size;
+		if(board->grid[i][j].val==EMPTY){
+			board->grid[i][j].val=CLOSED;
+			placed++;
+		}
+	}
+	
+}
+
+void UpdateScore(int *score, Param param){
+	FILE *file;
+
+	file=fopen("BestScore.crxx", "a");
+
+	if(file!=0){
+		fprintf(file, "On a %d board :\n\t%s mark %d\n\t%s mark %d\n", param.boardSize, param.name[0], score[0]+1 , param.name[1], score[1]+1);
+	}
+
+	fclose(file);	
+}
+
 void UpdateAlive(T_board board, int player, Hexa_list **Alive)
 {
 	int i=0;
@@ -227,6 +265,11 @@ int InitNewGameboard(int size, T_board* board){
 		board->grid[i][j].neighbords[L_DOWN]=&(board->grid[i][j+1]);
 	}
 
+	j=board->size-1;
+	for(i=0;i<board->size-1;i++){
+		board->grid[i][j].neighbords[R_DOWN]=&(board->grid[i+1][j]);
+	}
+
 	for(j=board->size-1;j>0;j--){
 		for(i=board->size-1;i>0;i--){
 			board->grid[i][j].neighbords[UP]=&(board->grid[i-1][j-1]);
@@ -234,6 +277,11 @@ int InitNewGameboard(int size, T_board* board){
 			board->grid[i][j].neighbords[R_UP]=&(board->grid[i][j-1]);
 		}
 		board->grid[i][j].neighbords[R_UP]=&(board->grid[i][j-1]);
+	}
+
+	j=0;
+	for(i=board->size-1;i>0;i--){
+		board->grid[i][j].neighbords[L_UP]=&(board->grid[i-1][j]);
 	}
 	
 	return EXIT_SUCCESS;

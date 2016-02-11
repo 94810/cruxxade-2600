@@ -15,13 +15,7 @@ SDL_Rect hexaBlack={168,0,54,54};
 SDL_Rect Token[2]={{0,56,24,34},{0,92,31,39}};
 SDL_Rect winText[3]={{46,112,364,66},{46,56,367,54},{46,180,165,50}};
 SDL_Rect arrow={121,232,19,18};
- 
-typedef struct {
-	int boardSize;
-	char name[2][10];
-	int gameMode;
-	int closedHex;
-}Param;
+SDL_Rect closed={26,64,19,25};
 
 void NewGame(SDL_Surface *screen, SDL_Surface *sprite, Param param){
 	int exit=1, goodClick=0, player=0, i=0, j=0;
@@ -40,13 +34,7 @@ void NewGame(SDL_Surface *screen, SDL_Surface *sprite, Param param){
 
 	InitNewGameboard(param.boardSize, &board);
 	
-	board.grid[0][0].val=PLAYER_1;
-        AppendList(Alive,(vect){0,0}); // C99 Compound Literals here
-
-
-	board.grid[board.size-1][board.size-1].val=PLAYER_2;
-	AppendList(Alive+1,(vect){board.size-1, board.size-1}); // Again
-
+	PlaceToken(param, &board, Alive);
 
 	while(exit)
 	{
@@ -127,6 +115,8 @@ void NewGame(SDL_Surface *screen, SDL_Surface *sprite, Param param){
 					
 			SDL_Flip(screen);
 			
+			UpdateScore(score, param);			
+			
 			SDL_Delay(50); //Prevent closing too soon
 			
 			while(exit){
@@ -193,18 +183,23 @@ Param menu(SDL_Surface *screen, SDL_Surface *sprite){
 						
 						case 1:
 							pos=(SDL_Rect){490,226,90,23};
-							param.boardSize=(param.boardSize+1)%12;
-							if (param.boardSize<3)
-								param.boardSize=3;
+							param.boardSize=(param.boardSize-2)%9+3;
 							sprintf(str, " %d", param.boardSize);
 							SDL_FillRect(screen, &pos , SDL_MapRGB(screen->format, 0, 0, 0));
 							PrintText(screen, sprite, str, (SDL_Rect){490,226,0,0});
+							if(param.closedHex>=(param.boardSize*param.boardSize-5)){
+								param.closedHex=0;
+								pos=(SDL_Rect){490,256,90,23};
+								sprintf(str, " %d", param.closedHex);
+								SDL_FillRect(screen, &pos , SDL_MapRGB(screen->format, 0, 0, 0));
+								PrintText(screen, sprite, str, (SDL_Rect){490,256,0,0});
+							}
 						break;
 
 						case 2:
 							pos=(SDL_Rect){490,256,90,23};
-							param.closedHex=(param.closedHex+1)%20;
-							if(param.closedHex>=(param.boardSize*param.boardSize-5))
+							param.closedHex=(param.closedHex+1)%30;
+							if(param.closedHex>=(param.boardSize*param.boardSize-10))
 								param.closedHex=0;
 							sprintf(str, " %d", param.closedHex);
 							SDL_FillRect(screen, &pos , SDL_MapRGB(screen->format, 0, 0, 0));
@@ -253,11 +248,15 @@ int main(){
 	SDL_Surface *screen = NULL, *sprite=NULL, *background=NULL;
 
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO); 
+
+	time_t t;
 	
 	screen = SDL_SetVideoMode(800, 600, 32, SDL_HWSURFACE);
 
 	if(screen==NULL)
 		abort();
+	
+	srand(time(&t));
 
 	SDL_WM_SetCaption("<===| Cruxxade - 2600 |====>",NULL);
 	
@@ -269,16 +268,12 @@ int main(){
 	background = SDL_DisplayFormatAlpha(temp); //Convert surface to a faster blitting format
 	SDL_FreeSurface(temp);
 	SDL_BlitSurface(background, NULL, screen, NULL);
-
 	
-//	AquireText(screen, sprite, str, 38, (SDL_Rect) {0, 300, 0, 0});	
-
 	param=menu(screen, sprite);	
 
-
-	NewGame(screen, sprite, param); //start New Game on new board
-
 	EraseBoard(11, screen, sprite);
+	
+	NewGame(screen, sprite, param); //start New Game on new board
 	
 	SDL_Flip(screen);
 			

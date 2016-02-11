@@ -59,8 +59,7 @@ void AquireText(SDL_Surface *screen, SDL_Surface *sprite, char *str, int tabsize
 				SDL_BlitSurface(sprite, GetBitmapGlyph(carac), screen, &posAct);
 				str[i]= (char) carac;
 				str[i+1]='\0';
-				if(i<tabsize-2)
-					i++;
+				i++;
 			}
 		}
 		

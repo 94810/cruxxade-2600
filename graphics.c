@@ -21,6 +21,7 @@ extern SDL_Rect hexaRed;
 extern SDL_Rect hexaBlack;
 extern SDL_Rect Token[2];
 extern SDL_Rect winText[3];
+extern SDL_Rect closed;
 
 void BlitWinner(SDL_Surface *sprite, SDL_Surface *screen, int *score){
 	SDL_Rect pos;
@@ -78,6 +79,11 @@ void BlitGameboard(T_board board, SDL_Surface* screen, SDL_Surface* sprite){
 				case PLAYER_2:
 					tokenPos = (SDL_Rect){Pos.x+11,Pos.y+7,0,0};
 					SDL_BlitSurface(sprite, Token+1, screen, &tokenPos);
+				break;
+				
+				case CLOSED:
+					tokenPos = (SDL_Rect){Pos.x+18, Pos.y+15};
+					SDL_BlitSurface(sprite, &closed, screen, &tokenPos);
 				break;
 				default :
 				break;

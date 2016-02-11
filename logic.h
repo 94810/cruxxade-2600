@@ -16,6 +16,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #define UP 0
 #define DOWN 1
@@ -26,6 +27,13 @@
 #define TRUE 1
 #define FALSE 0
 //Début Structure de Donnée
+ 
+typedef struct {
+	int boardSize;
+	char name[2][10];
+	int gameMode;
+	int closedHex;
+}Param;
 
 typedef enum{
 	JUMP, DUPLICATE, INVALIDE
@@ -68,5 +76,7 @@ void playMove(T_board* board, move mvt, Hexa_list **alivePlAct, vect start, vect
 void AppendList(Hexa_list** init, vect val);
 void SupprEltList(Hexa_list** init, unsigned int indice);
 void UpdateAlive(T_board board, int player, Hexa_list **Alive);
+void UpdateScore(int *score, Param param);
+void PlaceToken(Param param, T_board *board, Hexa_list **Alive);
 //Fin Prototype
 #endif
