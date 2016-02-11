@@ -5,7 +5,7 @@
 */
 #include "logic.h"
 #include "graphics.h"
-
+#include "text.h"
 //Vicious Evil of The Demonic Demon of Doom Globals Section
 
 SDL_Rect hexaBlue={0,0,54,54};
@@ -14,11 +14,13 @@ SDL_Rect hexaRed={112,0,54,54};
 SDL_Rect hexaBlack={168,0,54,54};
 SDL_Rect Token[2]={{0,56,24,34},{0,92,31,39}};
 SDL_Rect winText[3]={{46,112,364,66},{46,56,367,54},{46,180,165,50}};
+SDL_Rect arrow={121,232,19,18};
  
 typedef struct {
 	int boardSize;
-	char name[2][15];
+	char name[2][10];
 	int gameMode;
+	int closedHex;
 }Param;
 
 void NewGame(SDL_Surface *screen, SDL_Surface *sprite, Param param){
@@ -138,10 +140,115 @@ void NewGame(SDL_Surface *screen, SDL_Surface *sprite, Param param){
 	FreeBoard(&board);
 }
 
+Param menu(SDL_Surface *screen, SDL_Surface *sprite){
+	int exit=1, menuSelect=0;
+
+	char str[10]={0};
+	
+	Param param={5, {"Granolax", "Orangilux"}, 0, 0};
+
+	SDL_Event event;
+
+	int arrowPosYbase = 197; 
+
+	SDL_Rect pos, arrowPos={240, arrowPosYbase, arrow.w, arrow.h};
+
+	SDL_BlitSurface(sprite, &arrow, screen, &arrowPos);
+
+	PrintText(screen, sprite,"new game"  ,(SDL_Rect){260,194,0,0});
+
+	PrintText(screen, sprite,"board size" ,(SDL_Rect){260,226,0,0}) ;
+
+	sprintf(str, " %d", param.boardSize);
+	PrintText(screen, sprite, str, (SDL_Rect){490,226,0,0});
+	
+	PrintText(screen, sprite,"closed hex" ,(SDL_Rect){260,256,0,0}) ;
+
+	sprintf(str, " %d", param.closedHex);
+	PrintText(screen, sprite, str, (SDL_Rect){490,256,0,0});
+		
+	PrintText(screen, sprite,"game mode",(SDL_Rect){260,286,0,0});
+	
+	PrintText(screen, sprite, "pvp", (SDL_Rect){490,286,0,0});
+	
+	while(exit){
+		SDL_WaitEvent(&event);
+		if(event.type==SDL_KEYDOWN){
+			switch(event.key.keysym.sym){
+				
+				case SDLK_j:
+					SDL_FillRect(screen, &arrowPos, SDL_MapRGB(screen->format, 0, 0, 0));
+					menuSelect=(menuSelect+1)%4;
+					arrowPos.y = arrowPosYbase+(menuSelect*30);
+					SDL_BlitSurface(sprite, &arrow, screen, &arrowPos);
+				break;
+
+
+				case SDLK_RETURN:
+					switch(menuSelect){
+						case 0:
+							exit=0;
+							EraseBoard(11, screen, sprite);
+						break;
+						
+						case 1:
+							pos=(SDL_Rect){490,226,90,23};
+							param.boardSize=(param.boardSize+1)%12;
+							if (param.boardSize<3)
+								param.boardSize=3;
+							sprintf(str, " %d", param.boardSize);
+							SDL_FillRect(screen, &pos , SDL_MapRGB(screen->format, 0, 0, 0));
+							PrintText(screen, sprite, str, (SDL_Rect){490,226,0,0});
+						break;
+
+						case 2:
+							pos=(SDL_Rect){490,256,90,23};
+							param.closedHex=(param.closedHex+1)%20;
+							if(param.closedHex>=(param.boardSize*param.boardSize-5))
+								param.closedHex=0;
+							sprintf(str, " %d", param.closedHex);
+							SDL_FillRect(screen, &pos , SDL_MapRGB(screen->format, 0, 0, 0));
+							PrintText(screen, sprite, str, (SDL_Rect){490,256,0,0});
+						break;
+
+						case 3:
+							pos=(SDL_Rect){490,286,90,23};
+							param.gameMode=(param.gameMode+1)%2;
+							SDL_FillRect(screen, &pos , SDL_MapRGB(screen->format, 0, 0, 0));
+							if(param.gameMode==0)
+								PrintText(screen, sprite, "pvp", (SDL_Rect){490,286,0,0});
+							else	
+								PrintText(screen, sprite, "pvc", (SDL_Rect){490,286,0,0});
+						break;
+					}
+				break;
+				default:
+				break;
+			}
+		}
+
+		SDL_Flip(screen);
+	}
+
+	if(param.gameMode==0){
+		PrintText(screen, sprite, "player 1" ,(SDL_Rect){250,194,0,0});
+		PrintText(screen, sprite,"player 2" ,(SDL_Rect){250,226,0,0});
+		AquireText(screen, sprite, param.name[0], 10, (SDL_Rect) {450, 194, 0, 0});
+		AquireText(screen, sprite, param.name[1], 10, (SDL_Rect) {450, 226, 0, 0});	
+
+	}
+
+	else{
+		PrintText(screen, sprite,"player" ,(SDL_Rect){250,194,0,0});
+		AquireText(screen, sprite, param.name[0], 10, (SDL_Rect) {450, 194, 0, 0});
+	}
+
+	return param;
+}
 
 int main(){
 
-	Param param={11, {"Granolax","Orangilux"}, 0};
+	Param param;
 		
 	SDL_Surface *screen = NULL, *sprite=NULL, *background=NULL;
 
@@ -163,36 +270,21 @@ int main(){
 	SDL_FreeSurface(temp);
 	SDL_BlitSurface(background, NULL, screen, NULL);
 
-	//THUG ZONE 
-
-	SDL_Event event;
-	int i=1;
-	char carac;
 	
-	while(i){
-		SDL_WaitEvent(&event);
-		
-		switch(event.type){
-			case SDL_QUIT:
-				i=0;			
-			break;
-			case SDL_KEYDOWN:
-				printf("%s\n", SDL_GetKeyName(event.key.keysym.sym));
-			break;
-		}
+//	AquireText(screen, sprite, str, 38, (SDL_Rect) {0, 300, 0, 0});	
 
-	}
-	
+	param=menu(screen, sprite);	
 
-	//THUG ZONE
-	
+
 	NewGame(screen, sprite, param); //start New Game on new board
 
 	EraseBoard(11, screen, sprite);
 	
 	SDL_Flip(screen);
 			
-	SDL_Delay(2000);
+	SDL_FreeSurface(sprite);
+	SDL_FreeSurface(screen);
+	SDL_FreeSurface(background);
 	SDL_Quit();
 
 	return 0;
