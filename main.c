@@ -105,6 +105,19 @@ void NewGame(SDL_Surface *screen, SDL_Surface *sprite, Param param){
 			SDL_BlitSurface(sprite, &hexaRed, screen, &pos);
 		}
 
+		if(player==PLAYER_1){
+			pos = (SDL_Rect) {568, 526, 210, 23};
+			SDL_FillRect(screen, &pos, SDL_MapRGB(screen->format, 0, 0, 0));
+			pos.x = 21;
+		}
+		else{
+			pos = (SDL_Rect) {21,526, 210, 23};
+			SDL_FillRect(screen, &pos, SDL_MapRGB(screen->format, 0, 0, 0));
+			pos.x=568;
+		}
+		
+		PrintText(screen , sprite, param.name[player], pos);
+
 		SDL_Flip(screen);
 		
 		if(param.gameMode==1 && player==PLAYER_2 && playableToken!=0){
