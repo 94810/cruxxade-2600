@@ -50,41 +50,47 @@ void UpdateScore(int *score, Param param){
 	fclose(file);	
 }
 
-void UpdateAlive(T_board board, int player, Hexa_list **Alive)
+void UpdateAlive(T_board board, int player, Hexa_list **Alive, int *playableToken)
 {
 	int i=0;
 	Hexa_list *runList=NULL;
 
 	runList = Alive[player];
-	i=0;
+
+
 	while(runList!=NULL){
+
+		
 		if(board.grid[runList->pos.x][runList->pos.y].val==player){
 			if(IsAlive(runList->pos, board)==FALSE){
 				runList = runList->next;
-				SupprEltList(&(Alive[player]), i);	
-				i--;
 			}
 			
-			else
+			else{
 				runList = runList->next;
+				*playableToken=*playableToken+1;
+			}
 		}
 		else{
-			runList = runList->next;	
-			SupprEltList(&(Alive[player]), i);
+			runList = runList->next;
+			SupprEltList(Alive+player, i);
 			i--;
 		}
 	
-		i++;
+	i++;
+	
 	}
+	
 }
 
 void AppendList(Hexa_list** init, vect val){
 	Hexa_list *list=(*init);
 
+
 	if(*init==NULL){	
 		*init = malloc(sizeof(Hexa_list));
 		(*init)->next=NULL;
-		(*init)->pos=val;			
+		(*init)->pos=val;
 	}
 	
 	else{
@@ -167,8 +173,7 @@ void playMove(T_board* board, move mvt, Hexa_list **alivePlAct, vect start, vect
 	else if(mvt==JUMP){
 		board->grid[end.x][end.y].val = player;	
 		board->grid[start.x][start.y].val = EMPTY;
-		AppendList(alivePlAct, end);
-		
+		AppendList(alivePlAct, end);	
 	}
 
 	if(mvt==JUMP || mvt==DUPLICATE){

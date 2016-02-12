@@ -6,6 +6,7 @@
 #include "logic.h"
 #include "graphics.h"
 #include "text.h"
+#include "IA.h"
 //Vicious Evil of The Demonic Demon of Doom Globals Section
 
 SDL_Rect hexaBlue={0,0,54,54};
@@ -19,12 +20,15 @@ SDL_Rect closed={26,64,19,25};
 
 void NewGame(SDL_Surface *screen, SDL_Surface *sprite, Param param){
 	int exit=1, goodClick=0, player=0, i=0, j=0;
+	
+	int playableToken=2;
+
 	SDL_Event event;
 	SDL_Rect pos={0,0,0,0};
 
 	move actMv;
 
-	int score[2]={0};
+	int score[2]={2,2};
 
 	Hexa_list* Alive[2]={NULL,NULL};	 
 	
@@ -88,9 +92,10 @@ void NewGame(SDL_Surface *screen, SDL_Surface *sprite, Param param){
 			goodClick=0; //Reset click count
 			playMove(&board, actMv,&(Alive[player]) ,firstClick, secondClick, player, score); // Play the move
 			player=(player+1)%2; // Change player
-			UpdateAlive(board, player, Alive); //Update Alive Pawn		
+			playableToken=0;
+			UpdateAlive(board, player, Alive, &playableToken); //Update Alive Pawn
 		}
-				
+	
 		BlitGameboard(board, screen, sprite);
 		
 		if(tmp.x>=0 && tmp.x<board.size && tmp.y>=0 && tmp.y<board.size){
@@ -102,7 +107,13 @@ void NewGame(SDL_Surface *screen, SDL_Surface *sprite, Param param){
 
 		SDL_Flip(screen);
 		
-		if(Alive[player]==NULL){
+		if(param.gameMode==1 && player==PLAYER_2 && playableToken!=0){
+			firstClick=SelectToken(score[player], Alive[player], board);
+			secondClick=GenDest(firstClick, board);
+			goodClick=2;
+			printf("I Have play\n");
+		}
+		if(playableToken==0){
 			player=player+1%2; //Compute final score
 			for(i=0;i<board.size;i++){
 				for(j=0;j<board.size;j++){

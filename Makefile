@@ -2,6 +2,10 @@ CC=gcc
 CFLAGS=$(shell sdl-config --cflags) -Wall -g
 LIBS=$(shell sdl-config --libs) -lSDL_image -lm
 
+IA.o : IA.c IA.h 
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+
 text.o : text.c text.h police.h
 	$(CC) $(CFLAGS) -c -o $@ $<
 
@@ -14,7 +18,7 @@ graphics.o : graphics.c graphics.h
 main.o : main.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-cruxxade : main.o graphics.o logic.o text.o
+cruxxade : main.o graphics.o logic.o text.o IA.o
 	$(CC) -o $@ $^ $(LIBS) $(CFLAGS)
 
 clean :

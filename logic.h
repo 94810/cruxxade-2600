@@ -75,7 +75,7 @@ int IsAlive(vect pos, T_board board);
 void playMove(T_board* board, move mvt, Hexa_list **alivePlAct, vect start, vect end, int player, int *score);
 void AppendList(Hexa_list** init, vect val);
 void SupprEltList(Hexa_list** init, unsigned int indice);
-void UpdateAlive(T_board board, int player, Hexa_list **Alive);
+void UpdateAlive(T_board board, int player, Hexa_list **Alive, int *playableToken);
 void UpdateScore(int *score, Param param);
 void PlaceToken(Param param, T_board *board, Hexa_list **Alive);
 //Fin Prototype
