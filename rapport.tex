@@ -51,16 +51,14 @@ De plus, le programme devra également: \begin{itemize}
 Après la determintation et l'application du coup entré, le jeu vérifie si la partie est finie, via la fonction Update\_Alive, puis passe la main a l'autre joueur. 
 	\subsection{Vivacité des pions}
 
-Afin de vérifier si la partie est finie on utilise un principe de vivacité des pions: Un pion est considéré vivant tant que toutes les cases avec lesquelle il peut former un coup valide sont inoccupées, ou occupées par des pions vivants. Une fois le pion mort, il ne peut plus se déplacer, et est stocké dans une liste. Il devient donc facile de vérifier si le jeu est fini: Quand les pions d'un des deux joeurs sont tous morts, la partie est finie.\\
+Afin de vérifier si la partie est finie on utilise un principe de vivacité des pions: un pion mort est un pion qui pourra plus se déplacer de toute la partie. On tient une liste des pions vivants, qui est mise a jour a la fin de chaque tour. Il suffit de regarder si il reste un déplacement possible pour un pion. Il devient donc facile de vérifier si le jeu est fini: Quand un joueur n'a plus de pions vivants, la partie est finie.\\
 
-Cette méthode a l'avantage d'être moins couteuse en temps que de vérifier case par case, en effet, on ignore les cases vides, et il suffit de regarder dans la liste des pions morts pour determiner si un pion est mort.
-
-
+Cette méthode a l'avantage d'être moins couteuse en temps que de vérifier case par case, en effet, on ignore les cases vides, et il suffit de faire des comparaisons simples sur le plateau pour determiner si le pion est vivant ou pas.
 
 	\subsection{Déplacement et coups}
 	Pour determiner ou le joueur peut se copier/sauter, on utilise un algoritmhe qui nous renvoie, suivant la case de départ et celle d'arrivée, le coup joué.\\
 	
-	Pour cela, l'algorithme va calculer un vecteur de déplacement. Ce vecteur rassemble la distance entre les deux cases, ainsi que comment elles sont orientées l'une par rapport a l'autre.\		\
+	Pour cela, l'algorithme va calculer un vecteur de déplacement. Ce vecteur rassemble la distance entre les deux cases, ainsi que comment elles sont orientées l'une par rapport a l'autre.\\
 	
 	Au vu de vecteur il sera donc simple de déterminer si la case est joauble, et , ci c'est le cas, le type de coup jouée dans cette case.\\
 	Si c'est une copie, il suffit de changer la valeur de la case puis ,si besoin, celle des ces voisines directes, sinon, il suffit de regarder les voisins de la case d'arrivée, et de modifier leur valeurs si besoin.
