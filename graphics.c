@@ -15,9 +15,7 @@
 #include "graphics.h"
 
 //Even more Vicious Evil Globals Section
-extern SDL_Rect hexaBlue;
-extern SDL_Rect hexaGreen;
-extern SDL_Rect hexaRed;
+extern SDL_Rect hexaT[3];
 extern SDL_Rect hexaBlack;
 extern SDL_Rect Token[2];
 extern SDL_Rect winText[3];
@@ -50,44 +48,49 @@ void BlitWinner(SDL_Surface *sprite, SDL_Surface *screen, int *score){
 vect GetOrigineHex(int size){
 	vect pos;
 
-	pos.x = 0.5*(800-hexaBlue.w);
-	pos.y = 0.5*(600-(size)*hexaBlue.h);
+	pos.x = 0.5*(800-hexaT[0].w);
+	pos.y = 0.5*(600-(size)*hexaT[0].h);
 	
 	return pos;
 }
-
-void BlitGameboard(T_board board, SDL_Surface* screen, SDL_Surface* sprite){
+void DrawOneHex(T_board board, SDL_Surface *screen, SDL_Surface *sprite, vect hex, int color){
 	SDL_Rect Pos, tokenPos;
 	vect initPos = GetOrigineHex(board.size);
-	
-	int i, j;
 
-	initPos.x = 0.5*(800-hexaBlue.w);
-	initPos.y = 0.5*(600- (board.size)*hexaBlue.h);
+	initPos.x = 0.5*(800-hexaT[0].w);
+	initPos.y = 0.5*(600- (board.size)*hexaT[0].h);
+
+	Pos.x = (4.0/6.0)*hexaT[0].w*(hex.x-hex.y) + initPos.x;
+	Pos.y = 0.5*hexaT[0].h*(hex.x+hex.y) + initPos.y;
+
+	SDL_BlitSurface(sprite, &hexaT[color], screen, &Pos);
+	
+	switch(board.grid[hex.x][hex.y].val){
+		case PLAYER_1:
+			tokenPos = (SDL_Rect){Pos.x+16,Pos.y+10,0,0};
+			SDL_BlitSurface(sprite, Token, screen, &tokenPos);
+		break;
+				
+		case PLAYER_2:
+			tokenPos = (SDL_Rect){Pos.x+11,Pos.y+7,0,0};
+			SDL_BlitSurface(sprite, Token+1, screen, &tokenPos);
+		break;
+				
+		case CLOSED:
+			tokenPos = (SDL_Rect){Pos.x+18, Pos.y+15};
+			SDL_BlitSurface(sprite, &closed, screen, &tokenPos);
+		break;
+		default :
+		break;
+	}
+
+}
+void BlitGameboard(T_board board, SDL_Surface* screen, SDL_Surface* sprite){
+	int i, j;
 
 	for(i=0;i<board.size;i++){
 		for(j=0;j<board.size;j++){
-			Pos.x = (4.0/6.0)*hexaBlue.w*(i-j) + initPos.x;
-			Pos.y = 0.5*hexaBlue.h*(i+j) + initPos.y;
-			SDL_BlitSurface(sprite, &hexaBlue, screen, &Pos);
-			switch(board.grid[i][j].val){
-				case PLAYER_1:
-					tokenPos = (SDL_Rect){Pos.x+16,Pos.y+10,0,0};
-					SDL_BlitSurface(sprite, Token, screen, &tokenPos);
-				break;
-				
-				case PLAYER_2:
-					tokenPos = (SDL_Rect){Pos.x+11,Pos.y+7,0,0};
-					SDL_BlitSurface(sprite, Token+1, screen, &tokenPos);
-				break;
-				
-				case CLOSED:
-					tokenPos = (SDL_Rect){Pos.x+18, Pos.y+15};
-					SDL_BlitSurface(sprite, &closed, screen, &tokenPos);
-				break;
-				default :
-				break;
-			}
+			DrawOneHex(board, screen, sprite , (vect){i,j}, 0);			
 		}
 	}
 }
@@ -97,8 +100,8 @@ void EraseBoard(int size, SDL_Surface* screen, SDL_Surface* sprite){
 	
 	int i, j;
 
-	initPos.x = 0.5*(800-hexaBlue.w);
-	initPos.y = 0.5*(600- size*hexaBlue.h);
+	initPos.x = 0.5*(800-hexaT[0].w);
+	initPos.y = 0.5*(600- size*hexaT[0].h);
 
 	for(i=0;i<size;i++){
 		for(j=0;j<size;j++){
@@ -115,11 +118,11 @@ vect GetHexaCoor(T_board board, vect cursor){
 	
 	int k=0;
 
-	initPos.x=initPos.x+(hexaBlue.w/2);
+	initPos.x=initPos.x+(hexaT[0].w/2);
 	initPos.y=initPos.y;
 	
-	posX = (cursor.x-initPos.x) / ((4.0/6.0)*hexaBlue.w);
-	posY = (cursor.y-initPos.y) / (0.5*hexaBlue.h);
+	posX = (cursor.x-initPos.x) / ((4.0/6.0)*hexaT[0].w);
+	posY = (cursor.y-initPos.y) / (0.5*hexaT[0].h);
 	
 
 	k= (int)posX%2 + (int)posY%2;

@@ -20,6 +20,7 @@
 #include <SDL/SDL_image.h>
 #include "logic.h"
 
+void DrawOneHex(T_board board, SDL_Surface *screen, SDL_Surface *sprite, vect hex, int color);
 void BlitWinner(SDL_Surface *sprite, SDL_Surface *screen, int *score);
 vect GetOrigineHex(int size);
 void BlitGameboard(T_board board, SDL_Surface* screen, SDL_Surface* sprite);

@@ -9,9 +9,7 @@
 #include "IA.h"
 //Vicious Evil of The Demonic Demon of Doom Globals Section
 
-SDL_Rect hexaBlue={0,0,54,54};
-SDL_Rect hexaGreen={56,0,54,54};
-SDL_Rect hexaRed={112,0,54,54};
+SDL_Rect hexaT[3]={{0,0,54,54},{56,0,54,54},{112,0,54,54}};
 SDL_Rect hexaBlack={168,0,54,54};
 SDL_Rect Token[2]={{0,56,24,34},{0,92,31,39}};
 SDL_Rect winText[3]={{46,112,364,66},{46,56,367,54},{46,180,165,50}};
@@ -32,13 +30,15 @@ void NewGame(SDL_Surface *screen, SDL_Surface *sprite, Param param){
 
 	Hexa_list* Alive[2]={NULL,NULL};	 
 	
-	vect tmp, firstClick, secondClick;
+	vect tmp, pretmp={0,0},firstClick={-1,-1}, secondClick;
 
 	T_board board;
 
 	InitNewGameboard(param.boardSize, &board);
 	
 	PlaceToken(param, &board, Alive);
+
+	BlitGameboard(board, screen, sprite); //Update the whole board
 
 	while(exit)
 	{
@@ -64,6 +64,7 @@ void NewGame(SDL_Surface *screen, SDL_Surface *sprite, Param param){
 						if(tmp.x>=0 && tmp.x<board.size && tmp.y>=0 && tmp.y<board.size){
 							if(player==board.grid[tmp.x][tmp.y].val){
 								firstClick = tmp;
+								DrawOneHex(board, screen, sprite, firstClick, 1);	
 								goodClick++;
 							}
 						}
@@ -82,7 +83,9 @@ void NewGame(SDL_Surface *screen, SDL_Surface *sprite, Param param){
 					}
 				}
 				
-				else if(event.button.button==SDL_BUTTON_RIGHT){
+				else if(event.button.button==SDL_BUTTON_RIGHT&&goodClick==1){
+					DrawOneHex(board, screen, sprite, firstClick, 0);
+					firstClick=(vect){-1,-1};	
 					goodClick = 0;
 				}		
 			break;
@@ -94,15 +97,19 @@ void NewGame(SDL_Surface *screen, SDL_Surface *sprite, Param param){
 			player=(player+1)%2; // Change player
 			playableToken=0;
 			UpdateAlive(board, player, Alive, &playableToken); //Update Alive Pawn
+			BlitGameboard(board, screen, sprite); //Update the whole board
+			firstClick=(vect){-1,-1};
 		}
 	
-		BlitGameboard(board, screen, sprite);
 		
 		if(tmp.x>=0 && tmp.x<board.size && tmp.y>=0 && tmp.y<board.size){
-			pos.x = (4.0/6.0)*hexaBlue.w*(tmp.x-tmp.y) + GetOrigineHex(board.size).x;
-			pos.y = 0.5*hexaBlue.h*(tmp.x+tmp.y) + GetOrigineHex(board.size).y;
-			
-			SDL_BlitSurface(sprite, &hexaRed, screen, &pos);
+			if(pretmp.x!=tmp.x || pretmp.y != tmp.y){
+				if(pretmp.x != firstClick.x || pretmp.y != firstClick.y)
+					DrawOneHex(board, screen, sprite, pretmp, 0);
+				if(tmp.x != firstClick.x || tmp.y != firstClick.y)	
+					DrawOneHex(board, screen, sprite, tmp, 2);
+				pretmp=tmp;
+			}
 		}
 
 		if(player==PLAYER_1){
@@ -124,7 +131,6 @@ void NewGame(SDL_Surface *screen, SDL_Surface *sprite, Param param){
 			firstClick=SelectToken(score[player], Alive[player], board);
 			secondClick=GenDest(firstClick, board);
 			goodClick=2;
-			printf("I Have play\n");
 		}
 		if(playableToken==0){
 			player=player+1%2; //Compute final score
