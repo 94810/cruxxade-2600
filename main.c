@@ -99,6 +99,7 @@ void NewGame(SDL_Surface *screen, SDL_Surface *sprite, Param param){
 			UpdateAlive(board, player, Alive, &playableToken); //Update Alive Pawn
 			BlitGameboard(board, screen, sprite); //Update the whole board
 			firstClick=(vect){-1,-1};
+
 		}
 	
 		
@@ -128,9 +129,14 @@ void NewGame(SDL_Surface *screen, SDL_Surface *sprite, Param param){
 		SDL_Flip(screen);
 		
 		if(param.gameMode==1 && player==PLAYER_2 && playableToken!=0){
+			/* Ligne pour l'ia random
 			firstClick=SelectToken(score[player], Alive[player], board);
 			secondClick=GenDest(firstClick, board);
+			*/
+			GiveClick(&firstClick, &secondClick, Alive[1], board); //L'ia pas random
+			actMv = ValidMove(firstClick, secondClick, board);
 			goodClick=2;
+			SDL_Delay(80);
 		}
 		if(playableToken==0){
 			player=player+1%2; //Compute final score
@@ -157,6 +163,8 @@ void NewGame(SDL_Surface *screen, SDL_Surface *sprite, Param param){
 		}
 	}
 
+	FreeHexaList(Alive);
+	FreeHexaList(Alive+1);
 	FreeBoard(&board);
 }
 

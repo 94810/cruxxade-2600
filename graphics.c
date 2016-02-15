@@ -32,7 +32,7 @@ void BlitWinner(SDL_Surface *sprite, SDL_Surface *screen, int *score){
 	}
 
 
-	else if(score[0]==score[1]){
+	else if(score[0]==score[1]){ 
 		pos.x=400-(winText[2].w/2);
 		pos.y=300-(winText[2].h/2);
 		SDL_BlitSurface(sprite, &winText[2], screen, &pos);

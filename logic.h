@@ -78,5 +78,6 @@ void SupprEltList(Hexa_list** init, unsigned int indice);
 void UpdateAlive(T_board board, int player, Hexa_list **Alive, int *playableToken);
 void UpdateScore(int *score, Param param);
 void PlaceToken(Param param, T_board *board, Hexa_list **Alive);
+void FreeHexaList(Hexa_list **Alive);
 //Fin Prototype
 #endif
