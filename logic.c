@@ -141,7 +141,7 @@ move ValidMove(vect start, vect end, T_board board){
 	dpl.x=end.x-start.x;
 	dpl.y=end.y-start.y;
 
-	if(end.x>=0 && end.x<board.size && end.y>=0 && end.y<board.size && board.grid[end.x][end.y].val==EMPTY && board.grid[end.x][end.y].val!=CLOSED){
+	if(end.x>=0 && end.x<board.size && end.y>=0 && end.y<board.size && board.grid[end.x][end.y].val==EMPTY){
 		normSquare=(dpl.x*dpl.x)+(dpl.y*dpl.y);
 
 		if(dpl.x*dpl.y>=0){
