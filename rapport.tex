@@ -17,16 +17,16 @@
 
 \section{Introduction}
 
-Le but de ce projet est de créer un clone d'hexxagon en C. Le principe du jeu est le suivant. Le tableau est composé de cases hexagonles, sur lequelles deux joueurs déutent avec 2 pions chacun.\\
+Le but de ce projet est de créer un clone d'hexxagon en C. Le principe du jeu est le suivant. Le tableau est composé de cases hexagonles, sur lequelles deux joueurs débutent avec 2 pions chacun.\\
 
 A chaque tour, un joueur peut soit: copier un de ses pions sur une case vide adjacente, soit déplacer un de ses pions sur une case située à 2 de distance. Dans les deux cas, les pions ennemis adjacents sont pris.\\
 
 De plus, le programme devra également: \begin{itemize}
 \item Avoir une interface graphique
 \item Gérer des plateaux de différentes tailles
-\item Proposer un mode deux joeurs et unmode contre l'odinateur
+\item Proposer un mode deux joeurs et un mode contre l'odinateur
 \item Permettre de bloquer des cases sur le plateau 
-\item Mémoriser et afficher les scores
+\item Mémoriser les scores les plus élevés
 \end {itemize}
 \newpage
 	
@@ -42,7 +42,7 @@ De plus, le programme devra également: \begin{itemize}
 								  	\item Bloqué
 								  	\end{itemize}
 	
-		Cette structure permet donc de gérer le bloquage de certaines cases, ainsi qu'un calcule facile des cases ou le joeur peut jouer, ou non. 
+		Cette structure permet donc de gérer le bloquage de certaines cases, ainsi qu'un calcul facile des cases ou le joeur peut jouer, ou non. 
 
 	\subsection {Boucle principale}
 		
@@ -51,34 +51,41 @@ De plus, le programme devra également: \begin{itemize}
 Après la determintation et l'application du coup entré, le jeu vérifie si la partie est finie, via la fonction Update\_Alive, puis passe la main a l'autre joueur. 
 	\subsection{Vivacité des pions}
 
-Afin de vérifier si la partie est finie on utilise un principe de vivacité des pions: un pion mort est un pion qui pourra plus se déplacer de toute la partie. On tient une liste des pions vivants, qui est mise a jour a la fin de chaque tour. Il suffit de regarder si il reste un déplacement possible pour un pion. Il devient donc facile de vérifier si le jeu est fini: Quand un joueur n'a plus de pions vivants, la partie est finie.\\
+Afin de vérifier si la partie est finie, on utilise un principe de vivacité des pions: un pion mort est un pion qui pourra plus se déplacer de toute la partie. On tient une liste des pions vivants, qui est mise a jour a la fin de chaque tour. Il suffit donc de regarder si il reste un déplacement possible pour un pion. Il devient donc facile de vérifier si le jeu est fini: Quand un joueur n'a plus de pions vivants, la partie est finie.\\
 
-Cette méthode a l'avantage d'être moins couteuse en temps que de vérifier case par case, en effet, on ignore les cases vides, et il suffit de faire des comparaisons simples sur le plateau pour determiner si le pion est vivant ou pas.
+Cette méthode a l'avantage d'être moins couteuse en temps que de vérifier case par case, en effet, on ignore les cases vides, et il suffit de faire des comparaisons simples sur le plateau pour determiner si le pion est vivant ou non.
 
 	\subsection{Déplacement et coups}
-	Pour determiner ou le joueur peut se copier/sauter, on utilise un algoritmhe qui nous renvoie, suivant la case de départ et celle d'arrivée, le coup joué.\\
+	Pour determiner où le joueur peut se copier/sauter, on utilise un algoritmhe qui nous renvoie, suivant la case de départ et celle d'arrivée, le coup joué.\\
 	
 	Pour cela, l'algorithme va calculer un vecteur de déplacement. Ce vecteur rassemble la distance entre les deux cases, ainsi que comment elles sont orientées l'une par rapport a l'autre.\\
 	
-	Au vu de vecteur il sera donc simple de déterminer si la case est joauble, et , ci c'est le cas, le type de coup jouée dans cette case.\\
-	Si c'est une copie, il suffit de changer la valeur de la case puis ,si besoin, celle des ces voisines directes, sinon, il suffit de regarder les voisins de la case d'arrivée, et de modifier leur valeurs si besoin.
-
+	Au vu de vecteur il sera donc simple de déterminer si la case est joauble, et, ci c'est le cas, le type de coup jouée dans cette case.\\
+	Si c'est une copie, il suffit de changer la valeur de la case, sinon il suffit de déplacer le pion de la case de départ dans celle d'arrivée. Dans les deux cas, on regardera les pions adjacents a la case d'arrivée, et on les convertira dans la couleur du joueur qui vient de jouer
 	\subsection{Gestion des scores}
 	
-	A l'issue d'une partie le nombre de pions possédés par le vainqueur est sauvegardé, ainsi que le pseudo rentré au niveau du jeu, dans un ficher .crxx.
+	A l'issue d'une partie, le nombre de pions possédés par le vainqueur est sauvegardé, ainsi que le pseudo rentré au début du jeu, dans un ficher .crxx.
 	Cela permet d'enregistrer et d'afficher les scores les plus hauts atteints par les utilisateurs. Si l'IA remporte la partie, elle ne sauvegarde pas de score. 
 
-
+	\subsection{Intelligence Artificielle}
+	
+	L'intelligence artificelle fonctionne sur le principe du "plus grand score immédiat": A chaque tour l'IA va rechercher pour tous les coups, celui qui lui donne le plus de points, et jouer ce coup.
+	
+\newpage
 \section{Graphismes}
 	\subsection{Méthode choisie}
 	
-		Nous avons choisi de modéliser tout le jeu en utilisant la bibliothèque graphique SDL 1.2, qui nous permet de gérer le son, ainsi que les graphismes, et la souris. Nous importerons des images bitmap pour afficher le plateau et les pions.\\
+		Nous avons choisi de modéliser tout le jeu en utilisant la bibliothèque graphique SDL 1.2, qui nous permet de gérer le son, les graphismes, ainsi que la souris. On définit plusieurs découpes du fichier contenant les sprites via la strucutre SDL\_Rect (cette structure permet de définir un rectangle simple). On peut donc afficher seulment certaines parties du fichier png, et stocker toutes les images sur un seul fichier.\\
 		
-		La SDL nous permettra également dee gérer la selection des cases, ainsi que des boutons des menus, en utilisant un système de Collide Box.
-	
+		Ces découpes sont parfois stockées sous formes de tableaux, comme par exemple:\begin{itemize}
+		\item HexaT, qui contient l'Hexagone de base, ainsi que son contour vert ou rouge,
+		\item Token, qui contient les Pions des deux joueurs,
+		\item winText, qui contient les textes de victoire des deux joueurs, et le texte en cas d'égalité.
+		\end {itemize}
+		
 	\subsection{Style graphique}
 	
-		Nous avons choisi de faire notre hexagon dans le style synthwave (Tron Leagacy, Kung Fury, Far Cry : Blood Dragon): Couleurs néon sur du noir, et personnages cyberpunk.
+		Nous avons choisi de faire notre hexxagon dans le style synthwave (Tron Leagacy, Kung Fury, Far Cry : Blood Dragon): Couleurs néon sur du noir, et personnages cyberpunk.
 
 \end{document}
 
