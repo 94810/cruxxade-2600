@@ -84,8 +84,7 @@ void UpdateAlive(T_board board, int player, Hexa_list **Alive, int *playableToke
 	
 	i++;
 	
-	}
-	
+	}	
 }
 
 void AppendList(Hexa_list** init, vect val){
@@ -311,7 +310,7 @@ int IsAlive(vect pos, T_board board){
 	}
 
 	for(i=pos.x ; i<=pos.x+2 ; i++){
-		for(j=pos.y ; j<pos.y+2 ; j++){
+		for(j=pos.y ; j<=pos.y+2 ; j++){
 			if(j>=0 && i>=0 && j<board.size && i<board.size){
 				if(board.grid[i][j].val==EMPTY){
 					res = TRUE;

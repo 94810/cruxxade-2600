@@ -1,0 +1,28 @@
+#Makefile Tester sur darwin.isty.uvsq.fr le 8 février
+CC=gcc
+#SDL_IMAGE_ISTY=-L./SDL_Image/
+SDL_IMAGE_LIB=$(SDL_IMAGE_ISTY) -lSDL_image
+#SDL_IMAGE_H=-I./SDL_Image/
+CFLAGS=$(shell sdl-config --cflags) $(SDL_IMAGE_H) -Wall -g -m32
+LIBS=$(shell sdl-config --libs) $(SDL_IMAGE_LIB)
+
+IA.o : IA.c IA.h 
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+text.o : text.c text.h police.h
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+logic.o : logic.c logic.h
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+graphics.o : graphics.c graphics.h
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+main.o : main.c
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+cruxxade : main.o graphics.o logic.o text.o IA.o
+	$(CC) -o $@ $^ $(LIBS) $(CFLAGS)
+
+clean :
+	rm *.o
