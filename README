@@ -19,8 +19,17 @@
  |     their oppoment to their side. In the deep dark interplanetary         |
  |     space the War rage and YOU the great stratege has been call to it.    |
  |                                                                           |
- |         Choose your side, Good or Evil, command your cyber-bionic         |
- |      Monk army, win battle and became a War Master !                      |
+ |         Choose your side, Orangilux or Granolax, command your             |
+ |       cyber-bionic Monk army, win battle and became a War Master !        |
  |_                                                                         _|
  |_|_______________________________________________________________________|_|
 			           -2016-
+
+	         This game need SDL 1.2 and SDL_Image to be build. 
+
+Use mouse to play:
+	left click to select a token, and click again on the destination
+	rigth to cancel your token selection
+	Use 'J' to change menu
+	Use RETURN to change menu value / start
+
