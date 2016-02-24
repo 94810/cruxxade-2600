@@ -11,81 +11,81 @@
                                                               ||--|| *
 */
 #include "logic.h"
-void FreeHexaList(Hexa_list **Alive){
-	while(*Alive != NULL)
-		SupprEltList(Alive, 0);		
+void FreeHexaList(Hexa_list **Alive){ //Permet de vider une liste de pions, ils sont stockés via leur adresse.
+	while(*Alive != NULL) // Tant que le premier élément de la liste existe,
+		SupprEltList(Alive, 0);	//On le vire	
 }
 
 
 
-void PlaceToken(Param param, T_board *board, Hexa_list **Alive){
+void PlaceToken(Param param, T_board *board, Hexa_list **Alive){// permet d'initialiser le plateau en début de partie
 	
 	int placed=0, i=0, j=0;
 	
-	board->grid[0][0].val=PLAYER_1;
-	board->grid[board->size-1][board->size-1].val=PLAYER_1;
-	AppendList(&(Alive[0]), (vect) {0,0});
+	board->grid[0][0].val=PLAYER_1; //On place le premier pion du J1
+	board->grid[board->size-1][board->size-1].val=PLAYER_1;//Et le second a son opposée
+	AppendList(&(Alive[0]), (vect) {0,0}); //On ajoute les pions dans la liste des vivants
 	AppendList(&(Alive[0]), (vect) {board->size-1, board->size-1});
 	
-	board->grid[0][board->size-1].val=PLAYER_2;
+	board->grid[0][board->size-1].val=PLAYER_2; // On fait de même pour le J2
 	board->grid[board->size-1][0].val=PLAYER_2;
 
 	AppendList(&(Alive[1]), (vect) {0, board->size-1});
 	AppendList(&(Alive[1]), (vect) {board->size-1, 0});
 	
-	while(placed<param.closedHex){
-		i=rand()%board->size;
+	while(placed<param.closedHex){// Tant qu"il reste une case fermée a placer
+		i=rand()%board->size;// on prend 2 valeurs random dans la taille du tableau
 		j=rand()%board->size;
-		if(board->grid[i][j].val==EMPTY){
-			board->grid[i][j].val=CLOSED;
-			placed++;
-		}
+		if(board->grid[i][j].val==EMPTY){// si la case correspondante est vide
+			board->grid[i][j].val=CLOSED;//On la transforme en case fermée
+			placed++; // et une de moins a placer
+		}//sinon la boucle refait un tour, pas d'augementation de placed.
 	}
 	
 }
 
-void UpdateScore(int *score, Param param){
+void UpdateScore(int *score, Param param){//MAJ des scores
 	FILE *file;
 
-	file=fopen("BestScore.crxx", "a");
+	file=fopen("BestScore.crxx", "a");//Ouverture du fichier en mode ajout
 
-	if(file!=0){
+	if(file!=0){//On vérifie que le fichier existe
 		fprintf(file, "On a %d board :\n\t%s mark %d\n\t%s mark %d\n", param.boardSize, param.name[0], score[0]+1 , param.name[1], score[1]+1);
 	}
 
-	fclose(file);	
+	fclose(file);	//Fermeture du fichier
 }
 
-void UpdateAlive(T_board board, int player, Hexa_list **Alive, int *playableToken)
+void UpdateAlive(T_board board, int player, Hexa_list **Alive, int *playableToken)//MAJ de la liste des pions vivants
 {
 	int i=0;
 	Hexa_list *runList=NULL;
 
-	runList = Alive[player];
+	runList = Alive[player];//On crée une copie de la liste des pions vivants
 
 
-	while(runList!=NULL){
+	while(runList!=NULL){//Tant qu'on a pas exploré toute la liste:
 	
-		if(board.grid[runList->pos.x][runList->pos.y].val==player){
-			if(IsAlive(runList->pos, board)==FALSE){
-				runList = runList->next;
+		if(board.grid[runList->pos.x][runList->pos.y].val==player){// Est-ce que le pion appartient toujours a ce joueur?, Si oui
+			if(IsAlive(runList->pos, board)==FALSE){// Si le pion est mort,
+				runList = runList->next;// On passe au pion suivant,
 			}
 			
 			else{
-				runList = runList->next;
-				*playableToken=*playableToken+1;
+				runList = runList->next;// Sinon, on ajoute 1 a "playableToken" (J'ai pas compris a quoi ça sert)
+				*playableToken=*playableToken+1;// et on passe au pion suivant.
 			}
 		}
-		else{
-			runList = runList->next;
-			SupprEltList(Alive+player, i);
+		else{// Si le pion a changé de joueur
+			runList = runList->next; //On vire ce pion de la liste des pions vivants
+			SupprEltList(Alive+player, i);// et ton passe au pion d'après
 			i--;
 		}
 	
 	i++;
 	
 	}	
-}
+}//J'ai pas compris comment marche cette fonction...
 
 void AppendList(Hexa_list** init, vect val){
 	Hexa_list *list=(*init);
