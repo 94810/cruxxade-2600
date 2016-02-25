@@ -56,12 +56,12 @@ void UpdateScore(int *score, Param param){//MAJ des scores
 	fclose(file);	//Fermeture du fichier
 }
 
-void UpdateAlive(T_board board, int player, Hexa_list **Alive, int *playableToken)//MAJ de la liste des pions vivants
+void UpdateAlive(T_board board, int player, Hexa_list **Alive, int *playableToken)//MAJ de la liste des pions appartenant a joueur
 {
 	int i=0;
 	Hexa_list *runList=NULL;
 
-	runList = Alive[player];//On crée une copie de la liste des pions vivants
+	runList = Alive[player];//On crée une copie de la liste des pions du joueur
 
 
 	while(runList!=NULL){//Tant qu'on a pas exploré toute la liste:
@@ -72,12 +72,12 @@ void UpdateAlive(T_board board, int player, Hexa_list **Alive, int *playableToke
 			}
 			
 			else{
-				runList = runList->next;// Sinon, on ajoute 1 a "playableToken" (J'ai pas compris a quoi ça sert)
+				runList = runList->next;// Sinon, on compte le pion comme "jouable"
 				*playableToken=*playableToken+1;// et on passe au pion suivant.
 			}
 		}
 		else{// Si le pion a changé de joueur
-			runList = runList->next; //On vire ce pion de la liste des pions vivants
+			runList = runList->next; //On vire ce pion de la liste des pions de ce joueur
 			SupprEltList(Alive+player, i);// et ton passe au pion d'après
 			i--;
 		}
@@ -85,48 +85,48 @@ void UpdateAlive(T_board board, int player, Hexa_list **Alive, int *playableToke
 	i++;
 	
 	}	
-}//J'ai pas compris comment marche cette fonction...
+}
 
-void AppendList(Hexa_list** init, vect val){
-	Hexa_list *list=(*init);
+void AppendList(Hexa_list** init, vect val){// Permet d'ajouter un pion a la fin de la liste
+	Hexa_list *list=(*init); //on récupre le debut de la liste.
+	
 
-
-	if(*init==NULL){	
-		*init = malloc(sizeof(Hexa_list));
-		(*init)->next=NULL;
-		(*init)->pos=val;
+	if(*init==NULL){// si la liste est vide:
+		*init = malloc(sizeof(Hexa_list));//On crée une nouvelle liste,
+		(*init)->next=NULL;//qui contient un pion,
+		(*init)->pos=val;//dont la position est val.
 	}
 	
-	else{
-		while(list->next!=NULL)
-			list = list->next;
-
-		list->next = malloc(sizeof(Hexa_list));
-		list->next->next=NULL;
-		list->next->pos=val;	
+	else{//Sinon
+		while(list->next!=NULL)//Tant qu'on est pas au bout de la liste...
+			list = list->next;//On la parcourt
+		
+		list->next = malloc(sizeof(Hexa_list));//On ajoute au dernier pion un nouveau pion
+		list->next->next=NULL;//qui devient le dernier de la liste
+		list->next->pos=val;// et dont la valeur est val
 	}
 }
 
-void SupprEltList(Hexa_list** init, unsigned int indice){
-	Hexa_list *list=(*init), *pre=(*init);
+void SupprEltList(Hexa_list** init, unsigned int indice){// Permet du supprimer un elt d'une liste
+	Hexa_list *list=(*init), *pre=(*init);//On sauvegarde la tête de la liste, deux fois.
 
-	if(list!=NULL){
-		if(indice>0){
-			while(list->next!=NULL && indice>0){
-				pre=list;
-				list=list->next;
+	if(list!=NULL){//Si la liste n'est pas vide:
+		if(indice>0){//si l'indice est positif
+			while(list->next!=NULL && indice>0){//tant qu'on arrive pas a la fin de la liste, et qu'on a pas atteint l'indice voulu
+				pre=list;//On avance d'un élément
+				list=list->next;//list avance, aussi, mais il est tojours un après pre
 				indice --;
 			}
-			if(pre==list)
+			if(pre==list)// Si l'élément est le premier de la liste.
 				list=NULL;
 
-			pre->next=list->next;
-			free(list);
+			pre->next=list->next;// On bouche le "trou".
+			free(list);//On free le pion retiré.
 		}
 		
 		else{
-			*init=list->next;
-			free(list);
+			*init=list->next;//On remplace le début de liste par le second maillon
+			free(list);// On libère le 1er maillon.
 		}
 	}
 
